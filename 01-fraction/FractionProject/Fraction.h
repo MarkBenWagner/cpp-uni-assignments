@@ -11,6 +11,12 @@ public:
 	int GetNumerator() const;
 	int GetDenominator() const;
 
+	Fraction& operator+=(const Fraction& other);
+	Fraction& operator-=(const Fraction& other);
+	Fraction& operator*=(const Fraction& other);
+	Fraction& operator/=(const Fraction& other);
+
+
 private:
 	int numerator;
 	int denominator;
@@ -18,3 +24,15 @@ private:
 	void Normalize();
 	int GCDivisor(int num, int den);
 };
+	Fraction operator+(Fraction a, const Fraction& b);
+	Fraction operator-(Fraction a, const Fraction& b);
+	Fraction operator*(Fraction a, const Fraction& b);
+	Fraction operator/(Fraction a, const Fraction& b);
+
+	bool operator==(const Fraction& a, const Fraction& b);
+	bool operator!=(const Fraction& a, const Fraction& b);
+
+	bool operator<(const Fraction& a, const Fraction& b);
+	bool operator>(const Fraction& a, const Fraction& b);
+	bool operator<=(const Fraction& a, const Fraction& b);
+	bool operator>=(const Fraction& a, const Fraction& b);

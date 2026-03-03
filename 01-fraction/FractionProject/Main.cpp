@@ -18,4 +18,28 @@ int main() {
 	Fraction test4(test1);
 	std::cout << test4.GetNumerator() << std::endl;
 	std::cout << test4.GetDenominator() << std::endl;
+
+	test3 /= 3;
+	std::cout << test3.GetNumerator() << std::endl;
+	std::cout << test3.GetDenominator() << std::endl;
+
+	test3 = test3 + 21;
+	std::cout << test3.GetNumerator() << std::endl;
+	std::cout << test3.GetDenominator() << std::endl;
+
+	test3 = test3 * 21;
+	std::cout << test3.GetNumerator() << std::endl;
+	std::cout << test3.GetDenominator() << std::endl;
+
+	test3 = test3 / 21;
+	std::cout << test3.GetNumerator() << std::endl;
+	std::cout << test3.GetDenominator() << std::endl;
+
+	Fraction test5(21.25);
+
+	//bool equal = test3 == test5;
+	bool equal = 21.25 != test3;
+	std::cout << equal << std::endl;
+	bool greater = test3 < 21.25;
+	std::cout << greater << std::endl;
 }

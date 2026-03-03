@@ -66,3 +66,112 @@ int Fraction::GetDenominator() const
 {
 	return denominator;
 }
+
+Fraction& Fraction::operator+=(const Fraction& other) 
+{
+	numerator = numerator * other.denominator + other.numerator * denominator;
+	denominator = denominator * other.denominator;
+
+	Normalize();
+	return *this;
+}
+
+Fraction& Fraction::operator-=(const Fraction& other)
+{
+	numerator = numerator * other.denominator - other.numerator * denominator;
+	denominator = denominator * other.denominator;
+
+	Normalize();
+	return *this;
+}
+
+Fraction& Fraction::operator*=(const Fraction& other)
+{
+	numerator = numerator * other.numerator;
+	denominator = denominator * other.denominator;
+
+	Normalize();
+	return *this;
+}
+
+Fraction& Fraction::operator/=(const Fraction& other)
+{
+	numerator = numerator * other.denominator;
+	denominator = denominator * other.numerator;
+
+	Normalize();
+	return *this;
+}
+
+Fraction operator+(Fraction a, const Fraction& b)
+{
+	a += b;
+	return a;
+}
+
+Fraction operator-(Fraction a, const Fraction& b)
+{
+	a -= b;
+	return a;
+}
+
+Fraction operator*(Fraction a, const Fraction& b)
+{
+	a *= b;
+	return a;
+}
+
+Fraction operator/(Fraction a, const Fraction& b)
+{
+	a /= b;
+	return a;
+}
+
+bool operator==(const Fraction& a, const Fraction& b)
+{
+	if (a.GetNumerator() == b.GetNumerator() && a.GetDenominator() == b.GetDenominator())
+		return true;
+	else
+		return false;
+}
+
+bool operator!=(const Fraction& a, const Fraction& b)
+{
+	if (a.GetNumerator() != b.GetNumerator() || a.GetDenominator() != b.GetDenominator())
+		return true;
+	else
+		return false;
+}
+
+
+bool operator<(const Fraction& a, const Fraction& b)
+{
+	if (a.GetNumerator() * b.GetDenominator() < b.GetNumerator() * a.GetDenominator())
+		return true;
+	else
+		return false;
+}
+
+bool operator>(const Fraction& a, const Fraction& b)
+{
+	if (b.GetNumerator() * a.GetDenominator() < a.GetNumerator() * b.GetDenominator())
+		return true;
+	else
+		return false;
+}
+
+bool operator<=(const Fraction& a, const Fraction& b)
+{
+	if (a.GetNumerator() * b.GetDenominator() <= b.GetNumerator() * a.GetDenominator())
+		return true;
+	else
+		return false;
+}
+
+bool operator>=(const Fraction& a, const Fraction& b)
+{
+	if (b.GetNumerator() * a.GetDenominator() <= a.GetNumerator() * b.GetDenominator())
+		return true;
+	else
+		return false;
+}
