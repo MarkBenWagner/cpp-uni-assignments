@@ -42,4 +42,18 @@ int main() {
 	std::cout << equal << std::endl;
 	bool greater = test3 < 21.25;
 	std::cout << greater << std::endl;
+
+	std::cout << "Fraction to Integer: " << test3.GetNumerator() << "/" << test3.GetDenominator() << " --> " << static_cast<int>(test3) << std::endl;
+
+	Fraction test6(0, 5);
+	std::cout << "Fraction to Boolean: " << test6.GetNumerator() << "/" << test6.GetDenominator() << " --> " << static_cast<bool>(test6) << std::endl;
+	std::cout << "Fraction to String: " << test5.GetNumerator() << "/" << test5.GetDenominator() << " --> " << static_cast<std::string>(test5) << std::endl;
+	
+	PrintToConsole(test6);
+	Fraction test8 = StringToFraction("0.5");
+	std::cout << test8.GetNumerator() << std::endl;
+
+	Fraction test10(0);
+	std::cin >> test10;
+	std::cout << test10;
 }
