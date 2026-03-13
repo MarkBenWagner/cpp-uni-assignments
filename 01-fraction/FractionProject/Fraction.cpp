@@ -1,30 +1,18 @@
 #include <iostream>
-#include "Fraction.h"
 #include <stdexcept>
 #include <numeric>
 #include <string>
+#include "Fraction.h"
 
-
-int Fraction::GCDivisor(int num, int den) {
-	int res = std::min(std::abs(num), std::abs(den));
-	while (res > 1) {
-		if (num % res == 0 && den % res == 0)
-			break;
-		res--;
-	}
-	return res;
-}
 
 void Fraction::Normalize() {
 	if (denominator < 0) {
 		denominator *= -1;
 		numerator *= -1;
 	}
-	int common = GCDivisor(numerator, denominator);
-	if (common != 0) {
-		numerator /= common;
-		denominator /= common;
-	}
+	int common = std::gcd(numerator, denominator);
+	numerator /= common;
+	denominator /= common;
 }
 
 Fraction::Fraction(const int num, const int denom) 
@@ -53,12 +41,6 @@ Fraction::Fraction(const double value)
 	Normalize();
 }
 
-Fraction::Fraction(const Fraction& fraction)
-	: numerator{ fraction.GetNumerator() }
-	, denominator{ fraction.GetDenominator() }
-{
-}
-
 int Fraction::GetNumerator() const
 {
 	return numerator;
@@ -78,13 +60,16 @@ Fraction& Fraction::operator+=(const Fraction& other)
 	return *this;
 }
 
+Fraction Fraction::operator-() const
+{
+	Fraction result = *this;
+	result.numerator = -result.numerator;
+	return result;
+}
+
 Fraction& Fraction::operator-=(const Fraction& other)
 {
-	numerator = numerator * other.denominator - other.numerator * denominator;
-	denominator = denominator * other.denominator;
-
-	Normalize();
-	return *this;
+	return *this += -other;
 }
 
 Fraction& Fraction::operator*=(const Fraction& other)
@@ -98,6 +83,8 @@ Fraction& Fraction::operator*=(const Fraction& other)
 
 Fraction& Fraction::operator/=(const Fraction& other)
 {
+	if (other.denominator == 0) 
+		throw std::invalid_argument("Denominator cannot be zero!");
 	numerator = numerator * other.denominator;
 	denominator = denominator * other.numerator;
 
@@ -105,77 +92,60 @@ Fraction& Fraction::operator/=(const Fraction& other)
 	return *this;
 }
 
-Fraction operator+(Fraction a, const Fraction& b)
+Fraction Fraction::operator+(const Fraction& other) const
 {
-	a += b;
-	return a;
+	Fraction res{ *this };
+	return res += other;
 }
 
-Fraction operator-(Fraction a, const Fraction& b)
+Fraction Fraction::operator-(const Fraction& other) const
 {
-	a -= b;
-	return a;
+
+	Fraction result{ *this };
+	return result -= other;
 }
 
-Fraction operator*(Fraction a, const Fraction& b)
+Fraction Fraction::operator*(const Fraction& other) const
 {
-	a *= b;
-	return a;
+	Fraction res{ *this };
+	return res *= other;
 }
 
-Fraction operator/(Fraction a, const Fraction& b)
+Fraction Fraction::operator/(const Fraction& other) const
 {
-	a /= b;
-	return a;
+	Fraction res{ *this };
+	return res /= other;
 }
 
-bool operator==(const Fraction& a, const Fraction& b)
+bool Fraction::operator==(const Fraction& other) const
 {
-	if (a.GetNumerator() == b.GetNumerator() && a.GetDenominator() == b.GetDenominator())
-		return true;
-	else
-		return false;
+	return (numerator == other.numerator && denominator == other.denominator);
 }
 
-bool operator!=(const Fraction& a, const Fraction& b)
+bool Fraction::operator!=(const Fraction& other) const
 {
-	if (a.GetNumerator() != b.GetNumerator() || a.GetDenominator() != b.GetDenominator())
-		return true;
-	else
-		return false;
+	return !(*this == other);
 }
 
 
-bool operator<(const Fraction& a, const Fraction& b)
+bool Fraction::operator<(const Fraction& other) const
 {
-	if (a.GetNumerator() * b.GetDenominator() < b.GetNumerator() * a.GetDenominator())
-		return true;
-	else
-		return false;
+	return (numerator * other.denominator < other.numerator * denominator);
+}
+	
+bool Fraction::operator>(const Fraction& other) const
+{
+	return other < *this;
 }
 
-bool operator>(const Fraction& a, const Fraction& b)
+bool Fraction::operator<=(const Fraction& other) const
 {
-	if (b.GetNumerator() * a.GetDenominator() < a.GetNumerator() * b.GetDenominator())
-		return true;
-	else
-		return false;
+	return !(other < *this);
 }
 
-bool operator<=(const Fraction& a, const Fraction& b)
+bool Fraction::operator>=(const Fraction& other) const
 {
-	if (a.GetNumerator() * b.GetDenominator() <= b.GetNumerator() * a.GetDenominator())
-		return true;
-	else
-		return false;
-}
-
-bool operator>=(const Fraction& a, const Fraction& b)
-{
-	if (b.GetNumerator() * a.GetDenominator() <= a.GetNumerator() * b.GetDenominator())
-		return true;
-	else
-		return false;
+	return !(*this < other);
 }
 
 Fraction::operator int() const
@@ -195,16 +165,10 @@ Fraction::operator bool() const
 
 Fraction::operator std::string() const
 {
-	std::string fraction = std::to_string(numerator) + "/" + std::to_string(denominator);
-	return fraction;
+	return std::to_string(numerator) + "/" + std::to_string(denominator);
 }
 
-void PrintToConsole(Fraction fraction)
-{
-	std::cout << static_cast<std::string>(fraction) << std::endl;
-}
-
-Fraction StringToFraction(std::string input)
+Fraction Fraction::Parse(const std::string& input)
 {
 	if (input.find('/') != std::string::npos && input.find('.') == std::string::npos)
 		return Fraction(std::stoi(input.substr(0, input.find('/'))), std::stoi(input.substr(input.find('/') + 1)));
@@ -224,6 +188,6 @@ std::istream& operator>>(std::istream& is, Fraction& fraction)
 {
 	std::string input;
 	is >> input;
-	fraction = StringToFraction(input);
+	fraction = Fraction::Parse(input);
 	return is;
 }
