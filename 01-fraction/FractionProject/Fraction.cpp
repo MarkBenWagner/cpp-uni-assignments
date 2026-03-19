@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <numeric>
 #include <string>
+#include <sstream>
 #include "Fraction.h"
 
 
@@ -22,16 +23,14 @@ Fraction::Fraction(const int num, const int denom)
 	if (denom == 0) {
 		throw std::invalid_argument("Denominator cannot be zero!");
 	}
-	else {
-		Normalize();
-	}
+	
+	Normalize();
 }
 
 Fraction::Fraction(const int num)
 	: numerator{ num }
 	, denominator{ 1 }
 {
-	Normalize();
 }
 
 Fraction::Fraction(const double value)
@@ -39,16 +38,6 @@ Fraction::Fraction(const double value)
 	numerator = static_cast<int>(value * 1000000.0);
 	denominator = 1000000;
 	Normalize();
-}
-
-int Fraction::GetNumerator() const
-{
-	return numerator;
-}
-
-int Fraction::GetDenominator() const
-{
-	return denominator;
 }
 
 Fraction& Fraction::operator+=(const Fraction& other) 
@@ -74,8 +63,8 @@ Fraction& Fraction::operator-=(const Fraction& other)
 
 Fraction& Fraction::operator*=(const Fraction& other)
 {
-	numerator = numerator * other.numerator;
-	denominator = denominator * other.denominator;
+	numerator *= other.numerator;
+	denominator *= other.denominator;
 
 	Normalize();
 	return *this;
@@ -83,10 +72,10 @@ Fraction& Fraction::operator*=(const Fraction& other)
 
 Fraction& Fraction::operator/=(const Fraction& other)
 {
-	if (other.denominator == 0) 
-		throw std::invalid_argument("Denominator cannot be zero!");
-	numerator = numerator * other.denominator;
-	denominator = denominator * other.numerator;
+	if (other.numerator == 0) 
+		throw std::invalid_argument("Cannot divide by zero!");
+	numerator *= other.denominator;
+	denominator *= other.numerator;
 
 	Normalize();
 	return *this;
@@ -117,6 +106,38 @@ Fraction Fraction::operator/(const Fraction& other) const
 	return res /= other;
 }
 
+
+Fraction operator+(const Fraction& a, const Fraction& b)
+{
+	Fraction result = a;
+	result += b;
+	return result;
+}
+
+Fraction operator-(const Fraction& a, const Fraction& b)
+{
+	Fraction result = a;
+	result -= b;
+	return result;
+}
+
+Fraction operator*(const Fraction& a, const Fraction& b)
+{
+	Fraction result = a;
+	result *= b;
+	return result;
+}
+
+Fraction operator/(const Fraction& a, const Fraction& b)
+{
+	Fraction result = a;
+	result /= b;
+	return result;
+}
+
+
+
+
 bool Fraction::operator==(const Fraction& other) const
 {
 	return (numerator == other.numerator && denominator == other.denominator);
@@ -130,7 +151,7 @@ bool Fraction::operator!=(const Fraction& other) const
 
 bool Fraction::operator<(const Fraction& other) const
 {
-	return (numerator * other.denominator < other.numerator * denominator);
+	return static_cast<double>(*this) < static_cast<double>(other);
 }
 	
 bool Fraction::operator>(const Fraction& other) const
@@ -168,19 +189,10 @@ Fraction::operator std::string() const
 	return std::to_string(numerator) + "/" + std::to_string(denominator);
 }
 
-Fraction Fraction::Parse(const std::string& input)
-{
-	if (input.find('/') != std::string::npos && input.find('.') == std::string::npos)
-		return Fraction(std::stoi(input.substr(0, input.find('/'))), std::stoi(input.substr(input.find('/') + 1)));
-	else if (input.find('.') != std::string::npos)
-		return Fraction(std::stod(input));
-	else
-		return Fraction(std::stoi(input.substr(0, input.length())));
-}
 
 std::ostream& operator<<(std::ostream& os, const Fraction& fraction)
 {
-	os << fraction.GetNumerator() << "/" << fraction.GetDenominator();
+	os << fraction.numerator << "/" << fraction.denominator;
 	return os;
 }
 
@@ -188,6 +200,34 @@ std::istream& operator>>(std::istream& is, Fraction& fraction)
 {
 	std::string input;
 	is >> input;
-	fraction = Fraction::Parse(input);
+
+	size_t slashPosition = input.find('/');
+	size_t dotPosition = input.find('.');
+
+	if (slashPosition != std::string::npos && dotPosition == std::string::npos)
+	{
+		fraction.numerator = std::stoi(input.substr(0, slashPosition));
+		fraction.denominator = std::stoi(input.substr(slashPosition + 1));
+	}
+	else if (dotPosition != std::string::npos)
+	{
+		double value = std::stod(input);
+		fraction.numerator = static_cast<int>(value * 10000000.0);
+		fraction.denominator = 10000000;
+	}
+	else
+	{
+		fraction.numerator = std::stoi(input);
+		fraction.denominator = 1;
+	}
+	fraction.Normalize();
 	return is;
+}
+
+Fraction Fraction::Parse(const std::string& input)
+{
+	Fraction result;
+	std::stringstream ss(input);
+	ss >> result;
+	return result;
 }

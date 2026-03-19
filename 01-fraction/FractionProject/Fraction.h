@@ -9,9 +9,6 @@ public:
 	Fraction(const int num);
 	Fraction(const double value);
 
-	int GetNumerator() const;
-	int GetDenominator() const;
-
 	Fraction& operator+=(const Fraction& other);
 	Fraction& operator-=(const Fraction& other);
 	Fraction& operator*=(const Fraction& other);
@@ -40,6 +37,10 @@ public:
 
 	static Fraction Parse(const std::string& input);
 
+	friend std::ostream& operator<<(std::ostream& os, const Fraction& f);
+	friend std::istream& operator>>(std::istream& is, Fraction& f);
+
+
 private:
 	int numerator = 0;
 	int denominator = 1;
@@ -48,5 +49,7 @@ private:
 };
 
 
-	std::ostream& operator<<(std::ostream& os, const Fraction& f);
-	std::istream& operator>>(std::istream& is, Fraction& f);
+Fraction operator+(const Fraction& a, const Fraction& b);
+Fraction operator-(const Fraction& a, const Fraction& b);
+Fraction operator*(const Fraction& a, const Fraction& b);
+Fraction operator/(const Fraction& a, const Fraction& b);
