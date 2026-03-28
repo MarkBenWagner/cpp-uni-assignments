@@ -37,9 +37,7 @@ public:
 
 	static Fraction Parse(const std::string& input);
 
-	friend std::ostream& operator<<(std::ostream& os, const Fraction& f);
 	friend std::istream& operator>>(std::istream& is, Fraction& f);
-
 
 private:
 	int numerator = 0;
@@ -49,7 +47,9 @@ private:
 };
 
 
-Fraction operator+(const Fraction& a, const Fraction& b);
-Fraction operator-(const Fraction& a, const Fraction& b);
-Fraction operator*(const Fraction& a, const Fraction& b);
-Fraction operator/(const Fraction& a, const Fraction& b);
+Fraction operator+(const int a, const Fraction& b);
+Fraction operator-(const int a, const Fraction& b);
+Fraction operator*(const int a, const Fraction& b);
+Fraction operator/(const int a, const Fraction& b);
+	
+std::ostream& operator<<(std::ostream& os, const Fraction& f);

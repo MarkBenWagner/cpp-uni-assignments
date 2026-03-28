@@ -11,7 +11,7 @@ void Fraction::Normalize() {
 		denominator *= -1;
 		numerator *= -1;
 	}
-	int common = std::gcd(numerator, denominator);
+	const int common = std::gcd(numerator, denominator);
 	numerator /= common;
 	denominator /= common;
 }
@@ -34,9 +34,9 @@ Fraction::Fraction(const int num)
 }
 
 Fraction::Fraction(const double value)
+	: numerator{ static_cast<int>(value * 1000000.0) }
+	, denominator{ 1000000 }
 {
-	numerator = static_cast<int>(value * 1000000.0);
-	denominator = 1000000;
 	Normalize();
 }
 
@@ -107,32 +107,24 @@ Fraction Fraction::operator/(const Fraction& other) const
 }
 
 
-Fraction operator+(const Fraction& a, const Fraction& b)
+Fraction operator+(const int a, const Fraction& b)
 {
-	Fraction result = a;
-	result += b;
-	return result;
+	return Fraction(a) + b;
 }
 
-Fraction operator-(const Fraction& a, const Fraction& b)
+Fraction operator-(const int a, const Fraction& b)
 {
-	Fraction result = a;
-	result -= b;
-	return result;
+	return Fraction(a) - b;
 }
 
-Fraction operator*(const Fraction& a, const Fraction& b)
+Fraction operator*(const int a, const Fraction& b)
 {
-	Fraction result = a;
-	result *= b;
-	return result;
+	return Fraction(a) * b;
 }
 
-Fraction operator/(const Fraction& a, const Fraction& b)
+Fraction operator/(const int a, const Fraction& b)
 {
-	Fraction result = a;
-	result /= b;
-	return result;
+	return Fraction(a) / b;
 }
 
 
@@ -192,7 +184,7 @@ Fraction::operator std::string() const
 
 std::ostream& operator<<(std::ostream& os, const Fraction& fraction)
 {
-	os << fraction.numerator << "/" << fraction.denominator;
+	os << static_cast<std::string>(fraction);
 	return os;
 }
 
