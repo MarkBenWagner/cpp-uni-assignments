@@ -43,7 +43,7 @@ Fraction::Fraction(const double value)
 Fraction& Fraction::operator+=(const Fraction& other) 
 {
 	numerator = numerator * other.denominator + other.numerator * denominator;
-	denominator = denominator * other.denominator;
+	denominator *= other.denominator;
 
 	Normalize();
 	return *this;
@@ -51,9 +51,7 @@ Fraction& Fraction::operator+=(const Fraction& other)
 
 Fraction Fraction::operator-() const
 {
-	Fraction result = *this;
-	result.numerator = -result.numerator;
-	return result;
+	return Fraction(-numerator, denominator);
 }
 
 Fraction& Fraction::operator-=(const Fraction& other)
@@ -199,7 +197,15 @@ std::istream& operator>>(std::istream& is, Fraction& fraction)
 	if (slashPosition != std::string::npos && dotPosition == std::string::npos)
 	{
 		fraction.numerator = std::stoi(input.substr(0, slashPosition));
-		fraction.denominator = std::stoi(input.substr(slashPosition + 1));
+		int tmpDenominator = std::stoi(input.substr(slashPosition + 1));
+		if (tmpDenominator == 0)
+		{
+			throw std::invalid_argument("Denominator cannot be 0!");
+		}
+		else
+		{
+			fraction.denominator = tmpDenominator;
+		}
 	}
 	else if (dotPosition != std::string::npos)
 	{
