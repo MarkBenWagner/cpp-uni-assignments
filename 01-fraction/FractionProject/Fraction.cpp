@@ -34,10 +34,8 @@ Fraction::Fraction(const int num)
 }
 
 Fraction::Fraction(const double value)
-	: numerator{ static_cast<int>(value * 1000000.0) }
-	, denominator{ 1000000 }
+	: Fraction(static_cast<int>(value * 1000000.0), 1000000)
 {
-	Normalize();
 }
 
 Fraction& Fraction::operator+=(const Fraction& other) 
